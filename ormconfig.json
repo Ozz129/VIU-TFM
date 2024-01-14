@@ -1,0 +1,8 @@
+{
+    "migrationsTableName": "migrations",
+    "migrations": ["src/utils/database/src/*.ts"],
+    "cli": {
+      "migrationsDir": "src/utils/database/src/migration"
+    }
+}
+  
