@@ -14,18 +14,15 @@ export class User {
     @Column()
     password: string;
 
-    @Column({name: 'telegram_id'})
+    @Column({name: 'telegram_id', default:''})
     telegramId: string;
 
-    @Column({name: 'api_key'})
-    apiKey: string;
-
-    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', name: 'created_at' })
     createdAt: Date;
 
-    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)' })
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)', name: 'updated_at'  })
     updatedAt: Date;
 
-    @DeleteDateColumn({ type: 'timestamp', nullable: true })
+    @DeleteDateColumn({ type: 'timestamp', nullable: true, name: 'deleted_at'  })
     deletedAt?: Date;
 }

@@ -9,16 +9,28 @@
 
 import { Injectable } from "@nestjs/common";
 import { User } from "src/utils/database/src/entities/user";
+import { UserRepository } from "src/utils/database/src/repositories/user.repository";
 
 @Injectable()
 export class UserService {
-    constructor() {
+    constructor(private readonly userRepository: UserRepository) {
 
     }
 
     async create(user: User) {
-        return {
-            success: true
+        try {
+            const createdUser = await this.userRepository.createOrUpdateUser(user)
+            return createdUser.id;
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async list() {
+        try {
+            return this.userRepository.find();
+        } catch (error) {
+            throw error
         }
     }
 }

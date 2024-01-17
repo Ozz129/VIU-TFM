@@ -28,10 +28,7 @@ export class UserTable1705270655583 implements MigrationInterface {
                 {
                     name: 'telegram_id',
                     type: 'varchar',
-                },
-                {
-                    name: 'api_key',
-                    type: 'varchar',
+                    default: '0'
                 },
                 {
                     name: 'created_at',

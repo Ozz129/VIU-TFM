@@ -5,6 +5,10 @@ import { UserModule } from "../user/user.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "src/utils/database/src/entities/user";
 import { Crop } from "src/utils/database/src/entities/crop";
+import { UserRepository } from "src/utils/database/src/repositories/user.repository";
+import { CropModule } from "../crop/crop.module";
+import { DynamoDBclientService } from "src/utils/aws/src/services/dynammo-client.service";
+import { ConstantsModule } from "../constants/constants.module";
 
 @Module({
     imports: [
@@ -13,9 +17,14 @@ import { Crop } from "src/utils/database/src/entities/crop";
         }),
         DatabaseModule,
         UserModule,
-        TypeOrmModule.forFeature([User, Crop])
+        CropModule,
+        ConstantsModule,
+        TypeOrmModule.forFeature([User, Crop]),
     ],
-
+    providers: [
+        UserRepository,
+        DynamoDBclientService
+    ]
 })
 
 export class MainModule implements NestModule {
