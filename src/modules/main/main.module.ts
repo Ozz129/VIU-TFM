@@ -9,6 +9,9 @@ import { UserRepository } from "src/utils/database/src/repositories/user.reposit
 import { CropModule } from "../crop/crop.module";
 import { DynamoDBclientService } from "src/utils/aws/src/services/dynammo-client.service";
 import { ConstantsModule } from "../constants/constants.module";
+import { IrrigationModule } from "../irrigation/irrigation.module";
+import { NotificatioinModule } from "../notifications/notification.module";
+import { WebhookModule } from "../webhook/webhook.module";
 
 @Module({
     imports: [
@@ -19,6 +22,9 @@ import { ConstantsModule } from "../constants/constants.module";
         UserModule,
         CropModule,
         ConstantsModule,
+        IrrigationModule,
+        NotificatioinModule,
+        WebhookModule,
         TypeOrmModule.forFeature([User, Crop]),
     ],
     providers: [

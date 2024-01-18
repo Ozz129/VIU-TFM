@@ -12,10 +12,16 @@ export class User {
     rol: string;
 
     @Column()
+    username: string;
+
+    @Column()
     password: string;
 
     @Column({name: 'telegram_id', default:''})
     telegramId: string;
+
+    @Column({name: 'api_key', default:''})
+    apiKey: string;
 
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', name: 'created_at' })
     createdAt: Date;

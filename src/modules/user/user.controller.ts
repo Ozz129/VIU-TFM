@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Query, Get } from "@nestjs/common";
+import { Body, Controller, Post, Query, Get, Param } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { User } from "src/utils/database/src/entities/user";
 
@@ -21,6 +21,18 @@ export class UserController {
         @Query('filter') filter: string
     ): Promise<any> {
         return await this.userService.list()
+    }
+
+    @Get('user/:id/api-key')
+    async getUserApiKey(
+        @Param('id') userId: string
+    ) {
+        const data = await this.userService.getApiKey(Number(userId))
+        return {
+            data: {
+                apiKey: data.apiKey
+            }
+        }
     }
 }
 

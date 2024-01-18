@@ -22,11 +22,20 @@ export class UserTable1705270655583 implements MigrationInterface {
                     type: 'varchar',
                 },
                 {
+                    name: 'username',
+                    type: 'varchar',
+                },
+                {
                     name: 'password',
                     type: 'varchar',
                 },
                 {
                     name: 'telegram_id',
+                    type: 'varchar',
+                    default: '0'
+                },
+                {
+                    name: 'api_key',
                     type: 'varchar',
                     default: '0'
                 },

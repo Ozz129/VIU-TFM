@@ -1,5 +1,7 @@
 import { DataSource } from 'typeorm';
 import { User } from '../entities/user';
+import { Crop } from '../entities/crop';
+import { Irrigation } from '../entities/irrigation';
 
 export const AppDataSource = new DataSource({
     type: 'mysql', 
@@ -7,7 +9,7 @@ export const AppDataSource = new DataSource({
     username: 'root',
     password: '',
     database: 'tfm_iot',
-    entities: [User],
+    entities: [User, Crop, Irrigation],
     migrations: ['src/utils/database/src/migration/**/*.ts'],
 });
 
