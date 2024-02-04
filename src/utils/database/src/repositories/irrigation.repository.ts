@@ -11,4 +11,12 @@ export class IrrigationRepository extends Repository<Irrigation> {
     async createIrrigation(irrigation: Irrigation) {
         return this.save(irrigation)
     }
+
+    async getIrrigationByHour(executionHour: string) {
+        return this.find({
+            where: { executionHour },
+            relations: ['crop', 'crop.user'] // Asume que 'crop' tiene una relación con 'user'
+        });
+    }
+    
 }

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { DynamoDBClient, GetItemInput, UpdateItemInput } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, GetItemInput, PutItemCommand, PutItemCommandInput, QueryCommand, UpdateItemInput } from "@aws-sdk/client-dynamodb";
 import { GetCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 
 @Injectable()
@@ -40,5 +40,52 @@ export class DynamoDBclientService {
         } catch (error) {
             throw error;
         }
+    }
+
+    async setTemporalItem(data: any, sgi: string = '') {
+        const ttlDuration = 24 * 60 * 60; // 24 horas en segundos
+        const expirationTime = Math.floor(Date.now() / 1000) + 30; // Timestamp actual + 24 horas
+
+        let Item: any = {
+            PK: { S: data.PK.toString()},
+            data: {
+                M: data.content
+            },
+            lifetime: { N: expirationTime.toString()}
+        }
+
+        if(sgi !== '') {
+            Item.SGI = { S: sgi }
+        }
+
+        const params: PutItemCommandInput = {
+            TableName: data.table,
+            Item 
+        }       
+
+        try {   
+            this.dynamoDBClient.send(
+                new PutItemCommand(params)
+            )
+        } catch (error) {
+            console.log('ERROR TEMPORAL SAVING: ', error)
+        }
+    }
+
+    async getByQuery(params: any) {
+        const command = new QueryCommand({
+            TableName: params.table,
+            IndexName: 'SGI-index',
+            KeyConditionExpression: params.expression,
+            ExpressionAttributeValues: params.attributes
+        })
+        console.log('------> COMMMAND::::', command)
+
+        try {
+            return await this.dynamoDBClient.send(command);
+        } catch (error) {
+            console.log('ERROR getByQuery: ', error)
+        }
+
     }
 }

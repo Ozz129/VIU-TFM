@@ -8,7 +8,6 @@ export class NotificationController {
         private readonly notificationService: NotificationService
     ){}
     
-
     @Post('telegram')
     async createIrrigation(
         @Body() body: any

@@ -12,6 +12,10 @@ import { ConstantsModule } from "../constants/constants.module";
 import { IrrigationModule } from "../irrigation/irrigation.module";
 import { NotificatioinModule } from "../notifications/notification.module";
 import { WebhookModule } from "../webhook/webhook.module";
+import { ScheduleModule } from "@nestjs/schedule";
+import { Irrigation } from "src/utils/database/src/entities/irrigation";
+import { CronModule } from "../cron/cron.module";
+import { PollingModule } from "../polling/polling.module";
 
 @Module({
     imports: [
@@ -25,11 +29,15 @@ import { WebhookModule } from "../webhook/webhook.module";
         IrrigationModule,
         NotificatioinModule,
         WebhookModule,
-        TypeOrmModule.forFeature([User, Crop]),
+        CronModule,
+        PollingModule,
+        TypeOrmModule.forFeature([User, Crop, Irrigation]),
+        ScheduleModule.forRoot()
     ],
     providers: [
         UserRepository,
-        DynamoDBclientService
+        DynamoDBclientService,
+        //RedisClientService
     ]
 })
 
