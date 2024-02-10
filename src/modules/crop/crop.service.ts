@@ -52,6 +52,14 @@ export class CropService {
         } catch (error) {
             console.log('ERROR:::::::', error)
         }
+    }
 
+    async getById(id: any) {
+        console.log('IDDDDD', id)
+        try {
+            return await this.cropRepository.getById(id)
+        } catch (error) {
+            throw error
+        }
     }
 }

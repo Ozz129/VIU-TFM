@@ -6,6 +6,7 @@ import { DynamoDBclientService } from "src/utils/aws/src/services/dynammo-client
 import { IrrigationRepository } from "src/utils/database/src/repositories/irrigation.repository";
 import { SQSService } from "src/utils/aws/src/services/sqs-client.service";
 import { CacheModule } from "@nestjs/cache-manager";
+import { CropService } from "../crop/crop.service";
 
 
 @Module({
@@ -18,6 +19,8 @@ import { CacheModule } from "@nestjs/cache-manager";
         PollingService,
         SQSService,
         DynamoDBclientService,
+        CropService,
+        CropRepository
     ],
 })
 

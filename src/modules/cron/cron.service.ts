@@ -6,6 +6,7 @@ import { Irrigation } from 'src/utils/database/src/entities/irrigation';
 import { SQSService } from 'src/utils/aws/src/services/sqs-client.service';
 import { User } from 'src/utils/database/src/entities/user';
 import { DynamoDBclientService } from 'src/utils/aws/src/services/dynammo-client.service';
+import axios from "axios";
 
 @Injectable()
 export class cronService {
@@ -27,7 +28,7 @@ export class cronService {
             };
         });
 
-        console.log('TRANSFORMED::::', transformedIrrigations)
+        //console.log('TRANSFORMED::::', transformedIrrigations)
         if (transformedIrrigations.length > 0) {
             /*await this.sqsService.sendToQueue({
                 date: moment().utc(),
@@ -42,12 +43,21 @@ export class cronService {
     /**
      * Se ejecuta 5 minutos antes y ejecuta las acciones de riego programadas
      */
-    @Cron('56 * * * *')
+    @Cron('37 * * * *')
     async executeIrrigation(){
         console.log('CRON A LAS 54')
-      
+        
+        /*try {
+            // Construye la URL para la solicitud
+            const url = `http://192.168.1.177:85/?encender`;
+            // Hace la solicitud GET a la URL del Arduino
+            const response = await axios.get(url);
+            console.log('LED encendido:', response.data);
+          } catch (error) {
+            console.error('Error al intentar encender el LED:', error.message);
+          }
         //const executionHour = moment().format('HH');
-        const executionHour = 19;
+        /*const executionHour = 19;
         const params = {
             table: 'irrigationEvents',
             expression: 'SGI = :executionHour',
@@ -58,8 +68,8 @@ export class cronService {
 
         const response = await this.dynamoClientService.getByQuery(params)
         if(response.Items.length > 0) {
-            console.log('Ejecutar riego')
-        }
+            
+        }*/
     }
 }
 

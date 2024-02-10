@@ -14,7 +14,7 @@ async function bootstrap() {
   const ngrokUrl = 'https://ff0b-2800-484-e77d-89d0-2c3f-c402-cba7-a407.ngrok-free.app/v1/webhook/telegram'; // Reemplaza con tu URL pública
 
   axios.post(url, { url: ngrokUrl })
-    .then(() => console.log('Webhook configurado'))
+    .then(() => {/*console.log('Webhook configurado')*/})
     .catch(err => console.error('Error configurando el webhook', err));
 }
 bootstrap();

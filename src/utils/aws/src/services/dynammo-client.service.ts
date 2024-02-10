@@ -73,13 +73,19 @@ export class DynamoDBclientService {
     }
 
     async getByQuery(params: any) {
+        const data = {
+        TableName: params.table,
+        IndexName: 'SGI-index',
+        KeyConditionExpression: params.expression,
+        ExpressionAttributeValues: params.attributes
+        }
+        console.log('----->', data)
         const command = new QueryCommand({
             TableName: params.table,
             IndexName: 'SGI-index',
             KeyConditionExpression: params.expression,
             ExpressionAttributeValues: params.attributes
         })
-        console.log('------> COMMMAND::::', command)
 
         try {
             return await this.dynamoDBClient.send(command);

@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { WebhookService } from './webhook.service';
 import telegramFunctions from 'src/utils/functions/telegram.functions';
 import { DynamoDBclientService } from 'src/utils/aws/src/services/dynammo-client.service';
@@ -10,7 +10,8 @@ export class WebhookController {
     constructor(
         private readonly webhookService: WebhookService,
         private readonly dynamoClient: DynamoDBclientService,
-        private readonly sqsService: SQSService
+        private readonly sqsService: SQSService,
+
     ) {}
 
     //webhook: Controla toda la comunicacion a traves de telegram con el usuario
@@ -68,6 +69,19 @@ export class WebhookController {
                 break;
         }
      
+    }
+
+    @Get('arduino')
+    async hanldeIrrigation() {
+        console.log('GET')
+        return this.webhookService.getIrrigationEvents()
+    }
+
+    @Post('sensor')
+    async getSensorMeasure(
+        @Body() body: any
+    ) {
+        return this.webhookService.saveSensorMeasures(body)
     }
 
     async checkMessage(id: number) {
