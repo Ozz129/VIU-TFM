@@ -16,6 +16,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { Irrigation } from "src/utils/database/src/entities/irrigation";
 import { CronModule } from "../cron/cron.module";
 import { PollingModule } from "../polling/polling.module";
+import { AuthModule } from "../auth/auth.module";
 
 @Module({
     imports: [
@@ -32,7 +33,8 @@ import { PollingModule } from "../polling/polling.module";
         CronModule,
         PollingModule,
         TypeOrmModule.forFeature([User, Crop, Irrigation]),
-        ScheduleModule.forRoot()
+        ScheduleModule.forRoot(),
+        AuthModule
     ],
     providers: [
         UserRepository,

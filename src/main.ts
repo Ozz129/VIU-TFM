@@ -7,6 +7,11 @@ async function bootstrap() {
   const app = await NestFactory.create(MainModule);
   app.setGlobalPrefix('v1');
   app.useGlobalFilters(new BadRequestExceptionFilter())
+  app.enableCors({
+    origin: 'http://localhost:5174',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Accept',
+  });
   await app.listen(3000);
 
   const token = '6428078520:AAE5irWoEtxiR5QjWNNCMX_DSgs_HRfMtaI';

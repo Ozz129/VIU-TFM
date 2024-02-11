@@ -34,6 +34,13 @@ export class UserController {
             }
         }
     }
+
+    @Post('login')
+    async login(
+        @Body() body: any
+    ){
+        
+    }
 }
 
 

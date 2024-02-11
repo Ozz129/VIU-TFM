@@ -44,4 +44,14 @@ export class UserService {
             
         }
     }
+
+    async findUserByUsername(username: string) {
+        try {
+            return this.userRepository.findOneBy({
+                username
+            })
+        } catch (error) {
+            
+        }
+    }
 }
