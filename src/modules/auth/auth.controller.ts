@@ -1,5 +1,5 @@
 // auth.controller.ts
-import { Controller, Post, UseGuards, Body } from '@nestjs/common';
+import { Controller, Post, UseGuards, Body, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard'; // Necesitarás implementar este Guard si utilizas autenticación local
 
@@ -10,8 +10,9 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(
-        @Body() body: any
+        @Body() body: any,
+        @Request() req: any
     ) {
-    return this.authService.login(body.username);
+    return this.authService.login(req.user);
   }
 }

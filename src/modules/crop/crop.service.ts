@@ -28,9 +28,12 @@ export class CropService {
         }
     }
 
-    async list() {
+    async list(userId: number) {
         try {
-            return this.cropRepository.find();
+            return await this.cropRepository.find({
+                where: { userId },
+                relations: ['irrigations'],
+            });
         } catch (error) {
             throw error
         }

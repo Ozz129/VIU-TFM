@@ -9,8 +9,8 @@ async function bootstrap() {
   app.useGlobalFilters(new BadRequestExceptionFilter())
   app.enableCors({
     origin: 'http://localhost:5174',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Accept',
+    methods: 'GET,POST,PUT,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type,Authorization',
   });
   await app.listen(3000);
 
