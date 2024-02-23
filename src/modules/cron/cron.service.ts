@@ -19,6 +19,7 @@ export class cronService {
   @Cron(CronExpression.EVERY_5_SECONDS)
     async handleCron() {
         const now = moment().format('HH');
+
         const scheduledIrrigations = await this.irrigationRepository.getIrrigationByHour(`${now}:00:00`) as any;
         
         const transformedIrrigations: IrrigationWithStatus[] = scheduledIrrigations.map((irrigation: IrrigationWithStatus) => {
@@ -28,13 +29,13 @@ export class cronService {
             };
         });
 
-        //console.log('TRANSFORMED::::', transformedIrrigations)
         if (transformedIrrigations.length > 0) {
-            /*await this.sqsService.sendToQueue({
+            console.log('Se encolo un evento')
+            await this.sqsService.sendToQueue({
                 date: moment().utc(),
                 data: transformedIrrigations,
                 type: 'irrigation'
-            })*/
+            })
         }
 
     }

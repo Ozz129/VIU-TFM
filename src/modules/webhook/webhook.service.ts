@@ -13,6 +13,7 @@ import { UserRepository } from "src/utils/database/src/repositories/user.reposit
 import telegramFunctions from 'src/utils/functions/telegram.functions';
 import * as moment from 'moment';
 import { DynamoDBclientService } from "src/utils/aws/src/services/dynammo-client.service";
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class WebhookService {
@@ -41,27 +42,28 @@ export class WebhookService {
             table: 'irrigationEvents',
             expression: 'SGI = :executionHour',
             attributes: {
-                ':executionHour': { S: `${(19 + 1).toString()}:00:00` }
+                ':executionHour': { S: `${(executionHour).toString()}:00:00` }
             }
         }
 
         const response = await this.dynamoClientService.getByQuery(params)
         
         if (response.Count > 0) {
-            return true
+            return 'si'
         } else {
-            return false
+            return 'no'
         }
 
     }
 
     async saveSensorMeasures(body: any) {
+        console.log('SE ALMACENARA UNA MEDICION DE SENSORES')
         const timestampInSeconds = moment().unix();
 
         try {
             const params = {
                 table: 'sensorMeasures',
-                PK: 8,
+                PK: uuidv4(),
                 content: {
                     timestamp: { S: timestampInSeconds.toString()},
                     event: { M: 
@@ -72,7 +74,7 @@ export class WebhookService {
                     }
                 }
             }
-        //const measureStored = await this.dynamoClientService.setTemporalItem(params, `CROP#${body.cropId}`);
+       await this.dynamoClientService.setTemporalItem(params, `CROP#${body.cropId}`);
        } catch (error) {
         console.log('ERROR SAVING SENSORS:::', error)
        }

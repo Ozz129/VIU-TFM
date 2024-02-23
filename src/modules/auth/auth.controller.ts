@@ -10,7 +10,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(
-        @Body() body: any,
+        @Body() body: any, // ======> const body = '', true, 4, {}. []
         @Request() req: any
     ) {
     return this.authService.login(req.user);

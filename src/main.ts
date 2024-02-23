@@ -8,7 +8,7 @@ async function bootstrap() {
   app.setGlobalPrefix('v1');
   app.useGlobalFilters(new BadRequestExceptionFilter())
   app.enableCors({
-    origin: 'http://localhost:5174',
+    origin: 'http://localhost:5173',
     methods: 'GET,POST,PUT,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type,Authorization',
   });
@@ -16,7 +16,7 @@ async function bootstrap() {
 
   const token = '6428078520:AAE5irWoEtxiR5QjWNNCMX_DSgs_HRfMtaI';
   const url = `https://api.telegram.org/bot${token}/setWebhook`;
-  const ngrokUrl = 'https://ff0b-2800-484-e77d-89d0-2c3f-c402-cba7-a407.ngrok-free.app/v1/webhook/telegram'; // Reemplaza con tu URL pública
+  const ngrokUrl = 'https://d661-2800-484-e77d-89d0-8046-6f5a-ea67-682.ngrok-free.app/v1/webhook/telegram'; // Reemplaza con tu URL pública
 
   axios.post(url, { url: ngrokUrl })
     .then(() => {/*console.log('Webhook configurado')*/})

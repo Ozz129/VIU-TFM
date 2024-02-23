@@ -13,7 +13,6 @@ export class IrrigationController {
     async createIrrigation(
         @Body() body: any
     ): Promise<any> {
-        console.log('******** IRRIGATION', body)
         return this.irrigationService.create(body)
     }
 }

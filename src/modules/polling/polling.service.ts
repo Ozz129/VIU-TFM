@@ -7,6 +7,7 @@ import telegramFunctions from 'src/utils/functions/telegram.functions';
 import { DynamoDBclientService } from 'src/utils/aws/src/services/dynammo-client.service';
 import { CropService } from '../crop/crop.service';
 import * as moment from 'moment';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class PollingService implements OnModuleInit {
@@ -15,7 +16,7 @@ export class PollingService implements OnModuleInit {
         private readonly dynamoService: DynamoDBclientService,
         private readonly cropService: CropService
     ) {}
-    private readonly pollingInterval = 10000; // Intervalo de polling en milisegundos (ej. cada 10 segundos)
+    private readonly pollingInterval = 5000; // Intervalo de polling en milisegundos (ej. cada 10 segundos)
 
     onModuleInit() {
         setInterval(() => {
@@ -29,28 +30,29 @@ export class PollingService implements OnModuleInit {
 
             //Leemos el clima
         //const whether = await thirdPartyFunctions.checkWeatherApi();
-        const precipitation = 2.5//whether.current.precip_mm;        
-        const sqsMessage = {"date":"2024-01-19T01:19:45.004Z","data":[{"id":2,"cropId":1,"executionHour":"20:00:00","status":true,"crop":{"id":1,"userId":4,"cropTypeId":"","soilTypeId":"","cicle":"","saturationPoint":1,"tempIrrigationControl":1,"createdAt":"2024-01-17T21:32:53.000Z","updatedAt":"2024-01-19T01:17:09.000Z","deletedAt":null,"user":{"id":4,"fullName":"Felix Huels","rol":"manager","username":"Kristina1","password":"cYsZtOFL1UqIJNq","telegramId":"6730496316","apiKey":"d0269258-8f75-4e0f-99e0-4bf18d11561b","createdAt":"2024-01-18T00:58:11.000Z","updatedAt":"2024-01-18T01:52:16.000Z","deletedAt":null}},"executed":"scheduled"},{"id":3,"cropId":1,"executionHour":"20:00:00","status":true,"crop":{"id":1,"userId":4,"cropTypeId":"","soilTypeId":"","cicle":"","saturationPoint":1,"tempIrrigationControl":1,"createdAt":"2024-01-17T21:32:53.000Z","updatedAt":"2024-01-19T01:17:09.000Z","deletedAt":null,"user":{"id":4,"fullName":"Felix Huels","rol":"manager","username":"Kristina1","password":"cYsZtOFL1UqIJNq","telegramId":"6730496316","apiKey":"d0269258-8f75-4e0f-99e0-4bf18d11561b","createdAt":"2024-01-18T00:58:11.000Z","updatedAt":"2024-01-18T01:52:16.000Z","deletedAt":null}},"executed":"pending"}]}
+        //console.log('CLIMA::::', whether)
+        //const precipitation = whether.current.precip_mm;   
+        const precipitation = 0.2;     
             //Leemos SQS
-        //const data = await this.sqsService.readSQS();
-        //if (data.Messages) {
-            //for (const message of data.Messages) {
+        const data = await this.sqsService.readSQS();
+        console.log('DATA:::', data)
+        if (data.Messages) {
+            for (const message of data.Messages) {
               // Procesa el mensaje aquí
-              //console.log('Mensaje recibido:', message.Body);
-              // Elimina el mensaje de la cola después de procesarlo
-              //await this.sqsService.deleteMessage(message.ReceiptHandle);
+              console.log('Mensaje recibido:', typeof message.Body);
+              const sqsMessage: any = JSON.parse(message.Body);
+              console.log('Mensaje recibido:', sqsMessage);
 
-        
+              // Elimina el mensaje de la cola después de procesarlo
+              await this.sqsService.deleteMessage(message.ReceiptHandle);        
                 // Leemos cada accion de riego programada
 
-                let count = 1;
               for (const irrigation of sqsMessage.data) {
-
-                console.log('CONTEO:::::', count)
-                console.log('----- IRRIGATION::::', irrigation.cropId)
+                console.log('IRRIGATION:::::', irrigation)
                 const conditions = await this.check(irrigation.cropId ,precipitation)
-                console.log('--->', conditions)
                 if (irrigation.executed === 'scheduled' && conditions.length >= 1) {
+                    console.log('SE ENCOLO UNA ALERTA DE TELEGRAM:::::::')
+
                     // Si se cuenta con condiciones que permitan omitir el riego programado
                     /**
                      * Opciones posibles:
@@ -65,12 +67,12 @@ export class PollingService implements OnModuleInit {
                             ]
                         })
                     };
+                    console.log('TELEGRAM:::', irrigation.crop.user.telegramId)
                     const messageText = `Se encontraron las siguientes condiciones ${conditions.map((item: any) => item.message).join(', ')}, ¿desea detener el riego programado para las ${irrigation.executionHour}? responda:`;
-                    console.log('MENSAGEEEEEEE', messageText)
-                    //const id = await telegramFunctions.sendTelegramMessage(irrigation.crop.user.telegramId, messageText, messageOptions);
+                    const id = await telegramFunctions.sendTelegramMessage(irrigation.crop.user.telegramId, messageText, messageOptions);
                     const params = {
                         table: 'irrigationConfirmation',
-                        PK: 6,
+                        PK: id,
                         content: {
                             status: {S: 'waiting'},
                             response: {S: 'x'},
@@ -90,9 +92,10 @@ export class PollingService implements OnModuleInit {
                     }
                 } else {
                     // Si las condiciones son adecuadas para permitir el riego
+                    console.log('SE ENCOLO UN RIEGO:::::::')
                     const params = {
                         table: 'irrigationEvents',
-                        PK: 7,
+                        PK: uuidv4(),
                         content: {
                             event: { M: 
                                 { 
@@ -108,17 +111,16 @@ export class PollingService implements OnModuleInit {
                         console.log('** error dynamo **', error)
                     }
                 }
-                count++;
             }
             
-            //}
-         // }
+            }
+        }
     }
 
     private async check (cropId: any, mm: number): Promise<any> {
+        console.log('--CLIMAAAAAAA-->', mm)
         let restrictions = [];
 
-        console.log('CROP IDDDDDDDDD::::::::', cropId)
         const params = {
             table: 'sensorMeasures',
             expression: 'SGI = :exp',
@@ -127,60 +129,12 @@ export class PollingService implements OnModuleInit {
             }
         } 
 
-        //const response = await this.dynamoService.getByQuery(params)
-        const response = {
-            Items: [
-                {
-                  PK: { S: '8' },
-                  SGI: { S: 'CROP#1' },
-                  "data": {
-                    "M": {
-                      "event": {
-                        "M": {
-                          "humidity": {
-                            "S": "443"
-                          },
-                          "temperature": {
-                            "S": "33.09"
-                          }
-                        }
-                      },
-                      "timestamp": {
-                        "S": "1707591534"
-                      }
-                    }
-                  },
-                                  lifetime: { N: '1707591564' }
-                },
-                {
-                  PK: { S: '7' },
-                  SGI: { S: 'CROP#1' },
-                  "data": {
-                    "M": {
-                      "event": {
-                        "M": {
-                          "humidity": {
-                            "S": "471"
-                          },
-                          "temperature": {
-                            "S": "33.09"
-                          }
-                        }
-                      },
-                      "timestamp": {
-                        "S": "1707591474"
-                      }
-                    }
-                  },
-                                  lifetime: { N: '1707591504' }
-                }
-            ]
-        }
-
-        response.Items.sort((a: any, b: any) => b.data.M.timestamp.S - a.data.M.timestamp.S);
-        const mostRecentMeasure = response.Items[0].data.M.event.M;
-        const sensorHumidity = mostRecentMeasure.humidity.S;
-        const sensorTemperature = mostRecentMeasure.temperature.S;
+        const response = await this.dynamoService.getByQuery(params)
+     
+        response.Items.sort((a: any, b: any) => b.data?.M?.timestamp?.S - a.data?.M?.timestamp?.S);
+        const mostRecentMeasure = response.Items[0]?.data?.M?.event?.M;
+        const sensorHumidity = mostRecentMeasure?.humidity?.S;
+        const sensorTemperature = mostRecentMeasure?.temperature?.S;
         const crop = await this.cropService.getById(cropId)
 
         if (Number(sensorHumidity) > crop.saturationPoint) {
